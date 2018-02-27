@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+      {% block title %}<title>Robots Analyzer</title>{% endblock %}
+</head>
+
+<body>
+    <div id="main">
+        <form action="/scraper/website" method="POST">
+            {% csrf_token %}
+            <label for="domain_input">Domain: </label>
+            <input id="domain_input" type="text" name="domain_input" value="{{ website_domain }}">
+            <br>
+            <label for="website_input">Website url: </label>
+            <input id="website_input" type="text" name="website_input" value="{{ website_url }}">
+            <br>
+            <label for="robots_input">Robots url: </label>
+            <input id="robots_input" type="text" name="robots_input" value="{{ robots_url }}">
+            <br>
+            <input type="submit" value="OK">
+        </form>
+    </div>
+</body>
+</html>
