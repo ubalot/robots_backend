@@ -39,7 +39,7 @@ def content(request):
 
 
 @csrf_exempt
-def test(request):
+def test(request, name):
     return JsonResponse({
         'success': 1
     })
