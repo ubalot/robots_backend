@@ -8,6 +8,8 @@ class WebSite(models.Model):
     url = models.CharField(max_length=50)
     robots_url = models.CharField(max_length=50)
 
+    websites = models.Manager()
+
     def __str__(self):
         return self.url
 

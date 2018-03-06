@@ -19,20 +19,41 @@ def website(request):
         _website = WebSite(domain=domain, url=website_url, robots_url=robots_url)
         _website.save()
 
-        # return HttpResponse(json.dumps({
         return JsonResponse({
             'success': 1,
             'data': {
                 'website_url': website_url,
                 'robots_url': robots_url
             }
-        })  #)
+        })
     else:
         return JsonResponse({
             'success': 0,
             'message': 'Do a POST request.'
         })
 
+
+@csrf_exempt
+def websites_list(request):
+    if request.method == 'GET':
+        websites = WebSite.websites.all()
+        result = [{
+            'domain': w.domain,
+            'url': w.url,
+            'robots_url': w.robots_url
+        } for w in websites]
+
+        return JsonResponse({
+            'success': 1,
+            'data': {
+                'websites': result
+            }
+        })
+
+    return JsonResponse({
+        'success': 0,
+        'message': 'Do a GET request'
+    })
 
 @csrf_exempt
 def test(request):
