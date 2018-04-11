@@ -1,16 +1,13 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
 django = "*"
 requests = "*"
 "urllib3" = "*"
-
+django-cors-headers = "*"
+django-cors-middleware = "*"
 
 [dev-packages]
-

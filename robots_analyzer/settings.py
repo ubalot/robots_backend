@@ -25,8 +25,10 @@ SECRET_KEY = '!nox$jgzjide9k8yf)3l7eb%ze7y+3ehb*z&qo)q#0g(c$yx3e'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+# Allow cors requests
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
 
@@ -37,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'robots_scraper.apps.RobotsScraperConfig'
+    'robots_scraper.apps.RobotsScraperConfig',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +51,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'robots_analyzer.urls'
