@@ -1,3 +1,6 @@
+import re
+import urllib
+
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -5,58 +8,83 @@ from robots_scraper.models import WebSite
 
 
 @csrf_exempt
-def website(request):
-    """ Accept a POST request with website and robots urls.
+def add_website(request):
+    """ Accept a POST request with robots.txt url as parameter.
 
     :param request: WSGIRequest
-    :return: HttpResponse
+    :return: JsonResponse
     """
-    if request.method == 'POST':
-        domain = request.POST.get('domain')
-        website_url = request.POST.get('website')
-        robots_url = request.POST.get('robots')
-
-        _website = WebSite(domain=domain, url=website_url, robots_url=robots_url)
-        _website.save()
-
-        return JsonResponse({
-            'success': 1,
-            'data': {
-                'website_url': website_url,
-                'robots_url': robots_url
-            }
-        })
-    else:
+    if request.method != 'POST':
         return JsonResponse({
             'success': 0,
             'message': 'Do a POST request.'
         })
 
+    url = request.POST.get('url', None)
+    if not url:
+        return JsonResponse({
+            'success': 0,
+            'message': 'A parameter named "url" is needed.'
+        })
+
+    if not re.match(r'^http(s)?://', url, re.IGNORECASE):
+        url = 'http://' + url
+
+    parsed = urllib.parse.urlparse(url)
+
+    website_url = parsed.netloc
+    domain = re.sub(r'^www\.', '', website_url)
+
+    website = WebSite(domain=domain, url=website_url, robots_url=url)
+    website.save()
+
+    return JsonResponse({
+        'success': 1,
+        'data': {
+            'website': website_url,
+            'domain': domain,
+            'robots_url': url
+        }
+    })
+
 
 @csrf_exempt
 def websites_list(request):
-    if request.method == 'GET':
-        websites = WebSite.websites.all()
-        result = [{
-            'domain': w.domain,
-            'url': w.url,
-            'robots_url': w.robots_url
-        } for w in websites]
+    """ Accept GET request and return all websites in the db.
 
+    :param request: WSGIRequest
+    :return: JsonResponse
+    """
+    if request.method != 'GET':
         return JsonResponse({
-            'success': 1,
-            'data': {
-                'websites': result
-            }
+            'success': 0,
+            'message': 'Do a GET request'
         })
 
+    websites = WebSite.websites.all()
+
+    result = [{
+        'domain': w.domain,
+        'url': w.url,
+        'robots_url': w.robots_url
+    } for w in websites]
+
     return JsonResponse({
-        'success': 0,
-        'message': 'Do a GET request'
+        'success': 1,
+        'data': {
+            'websites': result
+        }
     })
+
 
 @csrf_exempt
 def test(request):
+    """ Simple API for testing purpose only. It accepts every type of request; return a generic Json to show that
+    it's alive.
+
+    :param request: WSGIRequest
+    :return: JsonResponse
+    """
     return JsonResponse({
         'success': 1
     })

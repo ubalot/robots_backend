@@ -50,6 +50,7 @@ class Rule(models.Model):
     def __str__(self):
         return self.rule
 
+
 class Route(models.Model):
     rule = models.ForeignKey(Rule, on_delete=models.CASCADE)
     route = models.CharField(max_length=50)

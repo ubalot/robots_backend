@@ -7,34 +7,33 @@ from django.views.decorators.csrf import csrf_exempt
 def content(request):
     """ Return robots.txt content for given url
 
-    :param request: <url>
+    :param request: Request
     :return: json
     """
-    if request.method == 'GET':
-        url = request.GET.get('url')
-        if url:
-            response = requests.get(url)
-            if response:
-                robots_txt = response.content.decode('utf-8')
+    if request.method != 'GET':
+        return JsonResponse({
+            'success': 0,
+            'message': 'Do a GET request.'
+        })
 
-                return JsonResponse({
-                    'success': 1,
-                    'data': robots_txt
-                })
-
-            return JsonResponse({
-                'success': 0,
-                'message': 'Wrong url. Retry with a correct one.'
-            })
-
+    url = request.GET.get('url')
+    if not url:
         return JsonResponse({
             'success': 0,
             'message': 'Wrong argument: use "url" as argument name.'
         })
 
+    response = requests.get(url)
+    if not response:
+        return JsonResponse({
+            'success': 0,
+            'message': 'Wrong url. Retry with a correct one.'
+        })
+
+    robots_txt = response.content.decode('utf-8')
     return JsonResponse({
-        'success': 0,
-        'message': 'Do a GET request.'
+        'success': 1,
+        'data': robots_txt
     })
 
 
