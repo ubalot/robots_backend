@@ -21,7 +21,7 @@ def add_website(request):
         })
 
     url = request.POST.get('url', None)
-    if not url:
+    if not url:  # wrong parameter name
         return JsonResponse({
             'success': 0,
             'message': 'A parameter named "url" is needed.'
@@ -34,6 +34,13 @@ def add_website(request):
 
     website_url = parsed.netloc
     domain = re.sub(r'^www\.', '', website_url)
+
+    # Add website to db only if it isn't already in it.
+    if WebSite.websites.filter(domain=domain):
+        return JsonResponse({
+            'success': 0,
+            'message': 'website with domain "{}" already exists.'.format(domain)
+        })
 
     website = WebSite(domain=domain, url=website_url, robots_url=url)
     website.save()

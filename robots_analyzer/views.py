@@ -23,7 +23,14 @@ def content(request):
             'message': 'Wrong argument: use "url" as argument name.'
         })
 
-    response = requests.get(url)
+    try:
+        response = requests.get(url)
+    except Exception as err:
+        return JsonResponse({
+            'success': 0,
+            'message': 'Invalid url.\nError: {}'.format(err)
+        })
+
     if not response:
         return JsonResponse({
             'success': 0,

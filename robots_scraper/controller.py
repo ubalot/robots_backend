@@ -22,6 +22,7 @@ def get_robots_txt(url):
 
 def robots_extrapolation(text):
     """Return dictionary with lists as values.
+
     :param text: str
     :return: collections.defaultdict | None
     """
