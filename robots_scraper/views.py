@@ -1,6 +1,6 @@
 import re
+import requests
 import urllib
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -25,6 +25,14 @@ def add_website(request):
         return JsonResponse({
             'success': 0,
             'message': 'A parameter named "url" is needed.'
+        })
+
+    try:
+        requests.get(url)
+    except Exception:
+        return JsonResponse({
+            'success': 0,
+            'message': "website '{}' doesn't exists. It hasn't been added into the database.".format(url)
         })
 
     if not re.match(r'^http(s)?://', url, re.IGNORECASE):
