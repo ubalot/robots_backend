@@ -28,7 +28,7 @@ def content(request):
     except Exception as err:
         return JsonResponse({
             'success': 0,
-            'message': 'Invalid url.\nError: {}'.format(err)
+            'message': 'Invalid or broken url.'
         })
 
     if not response:
