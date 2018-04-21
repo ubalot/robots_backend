@@ -9,10 +9,12 @@ pipenv install
 #### Create sqlite3 database
 ```bash
 pipenv shell
+python manage.py makemigrations robots_scraper
 python manage.py migrate
 ```
 or
 ```bash
+pipenv run python manage.py makemigrations robots_scraper
 pipenv run python manage.py migrate
 ```
 

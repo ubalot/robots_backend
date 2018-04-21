@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'robots_scraper.apps.RobotsScraperConfig',
     'corsheaders',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

@@ -22,5 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^(test)?$', views.test, name='test'),
     path('content', views.content, name='content'),
-    path('scraper/', include('robots_scraper.urls'))
+    path('scraper/', include('robots_scraper.urls'), name='scraper')
 ]

@@ -5,7 +5,7 @@ from robots_scraper.controller import get_robots_txt, robots_extrapolation
 
 class WebSite(models.Model):
     domain = models.CharField(max_length=50)
-    url = models.CharField(max_length=50)
+    website_url = models.CharField(max_length=50)
     robots_url = models.CharField(max_length=50)
 
     websites = models.Manager()

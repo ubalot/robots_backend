@@ -3,15 +3,18 @@ import requests
 import urllib
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
 
 from robots_scraper.models import WebSite
 
 
+@api_view(['GET', 'POST', 'DELETE'])
 @csrf_exempt
-def add_website(request, id=None):
+def add_website(request, website_id=None):
     """ Accept a POST request with robots.txt url as parameter.
 
     :param request: WSGIRequest
+    :param website_id: str
     :return: JsonResponse
     """
     if request.method == 'GET':
@@ -22,7 +25,13 @@ def add_website(request, id=None):
                 'message': 'A parameter named "url" is needed.'
             })
 
-        WebSite.websites.filter(url=url)
+        result = WebSite.websites.filter(robots_url=url)
+        return JsonResponse({
+            'success': 1,
+            'data': {
+                'ids': [w.id for w in result]
+            }
+        })
 
     elif request.method == 'POST':
         url = request.POST.get('url', None)
@@ -55,25 +64,23 @@ def add_website(request, id=None):
                 'message': 'website with domain "{}" already exists.'.format(domain)
             })
 
-        website = WebSite(domain=domain, url=website_url, robots_url=url)
+        website = WebSite(domain=domain, website_url=website_url, robots_url=url)
         website.save()
 
         return JsonResponse({
             'success': 1,
             'data': {
-                'website': website_url,
-                'domain': domain,
                 'robots_url': url
             }
         })
 
     elif request.method == 'DELETE':
-        if id is None:
+        if website_id is None:
             return JsonResponse({
                 'success': 0,
                 'message': 'DELETE request needs a id in order to delete a website from database.'
             })
-        tot_deleted_items, deleted_items = WebSite.websites.filter(id=id).delete()
+        tot_deleted_items, deleted_items = WebSite.websites.filter(id=website_id).delete()
         return JsonResponse({
             'success': 1,
             'data': {
@@ -82,12 +89,8 @@ def add_website(request, id=None):
             }
         })
 
-    return JsonResponse({
-        'success': 0,
-        'message': 'Do a POST request.'
-    })
 
-
+@api_view(['GET'])
 @csrf_exempt
 def websites_list(request):
     """ Accept GET request and return all websites in the db.
@@ -95,17 +98,11 @@ def websites_list(request):
     :param request: WSGIRequest
     :return: JsonResponse
     """
-    if request.method != 'GET':
-        return JsonResponse({
-            'success': 0,
-            'message': 'Do a GET request'
-        })
-
     websites = WebSite.websites.all()
 
     result = [{
         'domain': w.domain,
-        'url': w.url,
+        'website_url': w.url,
         'robots_url': w.robots_url
     } for w in websites]
 
@@ -117,6 +114,7 @@ def websites_list(request):
     })
 
 
+@api_view(['GET'])
 @csrf_exempt
 def test(request):
     """ Simple API for testing purpose only. It accepts every type of request; return a generic Json to show that
