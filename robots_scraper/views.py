@@ -8,58 +8,83 @@ from robots_scraper.models import WebSite
 
 
 @csrf_exempt
-def add_website(request):
+def add_website(request, id=None):
     """ Accept a POST request with robots.txt url as parameter.
 
     :param request: WSGIRequest
     :return: JsonResponse
     """
-    if request.method != 'POST':
+    if request.method == 'GET':
+        url = request.GET.get('url', None)
+        if not url:
+            return JsonResponse({
+                'success': 0,
+                'message': 'A parameter named "url" is needed.'
+            })
+
+        WebSite.websites.filter(url=url)
+
+    elif request.method == 'POST':
+        url = request.POST.get('url', None)
+        if not url:  # wrong parameter name
+            return JsonResponse({
+                'success': 0,
+                'message': 'A parameter named "url" is needed.'
+            })
+
+        try:
+            requests.get(url)
+        except Exception:
+            return JsonResponse({
+                'success': 0,
+                'message': "website '{}' doesn't exists. It hasn't been added into the database.".format(url)
+            })
+
+        if not re.match(r'^http(s)?://', url, re.IGNORECASE):
+            url = 'http://' + url
+
+        parsed = urllib.parse.urlparse(url)
+
+        website_url = parsed.netloc
+        domain = re.sub(r'^www\.', '', website_url)
+
+        # Add website to db only if it isn't already in it.
+        if WebSite.websites.filter(domain=domain):
+            return JsonResponse({
+                'success': 0,
+                'message': 'website with domain "{}" already exists.'.format(domain)
+            })
+
+        website = WebSite(domain=domain, url=website_url, robots_url=url)
+        website.save()
+
         return JsonResponse({
-            'success': 0,
-            'message': 'Do a POST request.'
+            'success': 1,
+            'data': {
+                'website': website_url,
+                'domain': domain,
+                'robots_url': url
+            }
         })
 
-    url = request.POST.get('url', None)
-    if not url:  # wrong parameter name
+    elif request.method == 'DELETE':
+        if id is None:
+            return JsonResponse({
+                'success': 0,
+                'message': 'DELETE request needs a id in order to delete a website from database.'
+            })
+        tot_deleted_items, deleted_items = WebSite.websites.filter(id=id).delete()
         return JsonResponse({
-            'success': 0,
-            'message': 'A parameter named "url" is needed.'
+            'success': 1,
+            'data': {
+                'tot_deleted_items': tot_deleted_items,
+                'deleted_items': deleted_items
+            }
         })
-
-    try:
-        requests.get(url)
-    except Exception:
-        return JsonResponse({
-            'success': 0,
-            'message': "website '{}' doesn't exists. It hasn't been added into the database.".format(url)
-        })
-
-    if not re.match(r'^http(s)?://', url, re.IGNORECASE):
-        url = 'http://' + url
-
-    parsed = urllib.parse.urlparse(url)
-
-    website_url = parsed.netloc
-    domain = re.sub(r'^www\.', '', website_url)
-
-    # Add website to db only if it isn't already in it.
-    if WebSite.websites.filter(domain=domain):
-        return JsonResponse({
-            'success': 0,
-            'message': 'website with domain "{}" already exists.'.format(domain)
-        })
-
-    website = WebSite(domain=domain, url=website_url, robots_url=url)
-    website.save()
 
     return JsonResponse({
-        'success': 1,
-        'data': {
-            'website': website_url,
-            'domain': domain,
-            'robots_url': url
-        }
+        'success': 0,
+        'message': 'Do a POST request.'
     })
 
 
