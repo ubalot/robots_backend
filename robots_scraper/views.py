@@ -10,7 +10,7 @@ from robots_scraper.models import WebSite
 
 @api_view(['GET', 'POST', 'DELETE'])
 @csrf_exempt
-def add_website(request, website_id=None):
+def handle_website(request, website_id=None):
     """ Accept a POST request with robots.txt url as parameter.
 
     :param request: WSGIRequest
