@@ -25,7 +25,7 @@ def handle_website(request, website_id=None):
                 'message': 'A parameter named "url" is needed.'
             })
 
-        result = WebSite.websites.filter(robots_url=url)
+        result = WebSite.websites.filter(robots_txt_url=url)
         return JsonResponse({
             'success': 1,
             'data': {
@@ -64,13 +64,13 @@ def handle_website(request, website_id=None):
                 'message': 'website with domain "{}" already exists.'.format(domain)
             })
 
-        website = WebSite(domain=domain, website_url=website_url, robot_url=url)
+        website = WebSite(domain=domain, website_url=website_url, robots_txt_url=url)
         website.save()
 
         return JsonResponse({
             'success': 1,
             'data': {
-                'robots_url': url
+                'robots_txt_url': url
             }
         })
 
@@ -105,7 +105,7 @@ def websites_list(request):
         'id': w.id,
         'domain': w.domain,
         'website_url': w.website_url,
-        'robot_url': w.robot_url
+        'robots_txt_url': w.robots_txt_url
     } for w in websites]
 
     return JsonResponse({

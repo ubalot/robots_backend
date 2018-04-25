@@ -1,12 +1,12 @@
 from django.db import models
 
-from robots_scraper.controller import get_robot_txt, robot_txt_extrapolation
+from robots_scraper.controller import get_robots_txt, robots_txt_extrapolation
 
 
 class WebSite(models.Model):
     domain = models.CharField(max_length=50)
     website_url = models.CharField(max_length=50)
-    robot_url = models.CharField(max_length=50)
+    robots_txt_url = models.CharField(max_length=50)
 
     websites = models.Manager()
 
@@ -14,8 +14,8 @@ class WebSite(models.Model):
         return self.url
 
     def parse_robot_txt(self):
-        robot_txt = get_robot_txt(self.robot_url)
-        content = robot_txt_extrapolation(robot_txt)
+        robots_txt = get_robots_txt(self.robots_txt_url )
+        content = robots_txt_extrapolation(robots_txt)
         return content
 
     def after_save(self):
