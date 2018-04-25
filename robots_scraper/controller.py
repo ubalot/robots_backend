@@ -3,7 +3,7 @@ import collections
 import requests
 
 
-def get_robots_txt(url):
+def get_robot_txt(url):
     """
     :param url: str
     :return: str | None
@@ -20,7 +20,7 @@ def get_robots_txt(url):
     return None
 
 
-def robots_extrapolation(text):
+def robot_txt_extrapolation(text):
     """Return dictionary with lists as values.
 
     :param text: str

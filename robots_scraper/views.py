@@ -64,7 +64,7 @@ def handle_website(request, website_id=None):
                 'message': 'website with domain "{}" already exists.'.format(domain)
             })
 
-        website = WebSite(domain=domain, website_url=website_url, robots_url=url)
+        website = WebSite(domain=domain, website_url=website_url, robot_url=url)
         website.save()
 
         return JsonResponse({
@@ -102,8 +102,8 @@ def websites_list(request):
 
     result = [{
         'domain': w.domain,
-        'website_url': w.url,
-        'robots_url': w.robots_url
+        'website_url': w.website_url,
+        'robot_url': w.robot_url
     } for w in websites]
 
     return JsonResponse({
