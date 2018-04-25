@@ -84,6 +84,7 @@ def handle_website(request, website_id=None):
         return JsonResponse({
             'success': 1,
             'data': {
+                'id': website_id,
                 'tot_deleted_items': tot_deleted_items,
                 'deleted_items': deleted_items
             }
@@ -101,6 +102,7 @@ def websites_list(request):
     websites = WebSite.websites.all()
 
     result = [{
+        'id': w.id,
         'domain': w.domain,
         'website_url': w.website_url,
         'robot_url': w.robot_url
